@@ -1,0 +1,5 @@
+{
+  "name": "COORDINATE SU MAPPA",
+  "description": "An application that allows users to upload an image (like a map or floor plan), calibrate its scale using a known distance, set a custom origin, and then map out points to get their real-world coordinates in meters.",
+  "requestFramePermissions": []
+}
