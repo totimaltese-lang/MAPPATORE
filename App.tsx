@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, MouseEvent } from 'react';
 import { AppState, Point, PixelCoords, RealCoords, Area } from './types';
-import { Upload, Ruler, Target, MapPin, X, Save, Trash2, RefreshCcw, MousePointerClick, Download, Pencil, Check, FileText, Shapes } from 'lucide-react';
+import { Upload, Ruler, Target, MapPin, X, Save, Trash2, RefreshCcw, MousePointerClick, Download, Pencil, Check, FileText, Shapes, DownloadCloud } from 'lucide-react';
 
 // Add TypeScript declaration for pdf.js and jsPDF libraries loaded via script tags
 declare global {
@@ -48,11 +48,28 @@ export const App: React.FC = () => {
     
     // State for responsive image dimensions
     const [imageDimensions, setImageDimensions] = useState<{width: number, height: number} | null>(null);
+    
+    // PWA install prompt state
+    const [installPrompt, setInstallPrompt] = useState<any>(null);
 
 
     const imageRef = useRef<HTMLImageElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const compassRef = useRef<HTMLDivElement>(null);
+
+    // Effect to listen for the PWA install prompt
+    useEffect(() => {
+        const handleBeforeInstallPrompt = (e: Event) => {
+            e.preventDefault();
+            setInstallPrompt(e);
+        };
+
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        };
+    }, []);
 
     // Effect to dynamically load and configure the PDF.js library.
     useEffect(() => {
@@ -777,6 +794,20 @@ export const App: React.FC = () => {
         setEditingAreaName('');
     };
 
+    const handleInstallClick = () => {
+        if (installPrompt) {
+            installPrompt.prompt();
+            installPrompt.userChoice.then((choiceResult: { outcome: 'accepted' | 'dismissed' }) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                setInstallPrompt(null);
+            });
+        }
+    };
+
     const instruction = getInstruction();
 
     const renderNamingModal = () => {
@@ -858,9 +889,16 @@ export const App: React.FC = () => {
                 <>
                     <header className="flex justify-between items-center p-4 bg-gray-900/80 backdrop-blur-sm z-20 flex-shrink-0">
                         <h1 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">Mappatore Immagini</h1>
-                        <button onClick={handleReset} className="px-4 py-2 text-sm rounded-md bg-red-600 hover:bg-red-500 transition-colors flex items-center gap-2">
-                            <RefreshCcw size={16} /> Ricomincia
-                        </button>
+                        <div className="flex items-center gap-2">
+                             {installPrompt && (
+                                <button onClick={handleInstallClick} className="px-4 py-2 text-sm rounded-md bg-indigo-600 hover:bg-indigo-500 transition-colors flex items-center gap-2">
+                                    <DownloadCloud size={16} /> Installa App
+                                </button>
+                            )}
+                            <button onClick={handleReset} className="px-4 py-2 text-sm rounded-md bg-red-600 hover:bg-red-500 transition-colors flex items-center gap-2">
+                                <RefreshCcw size={16} /> Ricomincia
+                            </button>
+                        </div>
                     </header>
                     <main className="flex-grow flex flex-col lg:flex-row relative min-h-0">
                         <div className="flex-grow flex flex-col min-h-0">

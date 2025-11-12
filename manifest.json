@@ -1,0 +1,21 @@
+{
+  "short_name": "Mappatore",
+  "name": "Mappatore e Calibratore Immagini",
+  "description": "Un'applicazione che permette di caricare un'immagine (mappa, planimetria), calibrarne la scala, impostare un'origine e mappare punti per ottenere coordinate reali.",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#111827",
+  "background_color": "#111827"
+}
